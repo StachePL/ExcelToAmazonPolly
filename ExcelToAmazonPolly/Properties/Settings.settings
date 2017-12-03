@@ -1,0 +1,15 @@
+﻿<?xml version='1.0' encoding='utf-8'?>
+<SettingsFile xmlns="http://schemas.microsoft.com/VisualStudio/2004/01/settings" CurrentProfile="(Default)" GeneratedClassNamespace="ExcelToAmazonPolly.Properties" GeneratedClassName="Settings">
+  <Profiles />
+  <Settings>
+    <Setting Name="awsID" Type="System.String" Scope="User">
+      <Value Profile="(Default)">awsID</Value>
+    </Setting>
+    <Setting Name="awsKey" Type="System.String" Scope="User">
+      <Value Profile="(Default)">awsKey</Value>
+    </Setting>
+    <Setting Name="awsRegion" Type="System.String" Scope="User">
+      <Value Profile="(Default)">us-east-2</Value>
+    </Setting>
+  </Settings>
+</SettingsFile>
