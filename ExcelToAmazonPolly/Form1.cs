@@ -20,9 +20,11 @@ namespace ExcelToAmazonPolly
         private string _outputFolder = @"C:\VoiceOutput";
         private string _awsID = @Properties.Settings.Default.awsID;
         private string _awsSecret = @Properties.Settings.Default.awsKey;
-        private string _region = @Properties.Settings.Default.awsRegion; 
+        private string _region = @Properties.Settings.Default.awsRegion;
+        private bool initialized = false;
         private AmazonPollyClient _pc;
         private string _fileFormat = "Ogg_vorbis"; // json | mp3 | ogg_vorbis | pcm
+        private List<string> lexiconsList = new List<string>();
 
 
         public Form1()
@@ -112,26 +114,20 @@ namespace ExcelToAmazonPolly
         private void btn_generate_Click(object sender, EventArgs e)
         {
 
-            //Refresh properties
-            Properties.Settings.Default.Reload();
-            _awsID = @Properties.Settings.Default.awsID;
-            _awsSecret = @Properties.Settings.Default.awsKey;
-            _region = @Properties.Settings.Default.awsRegion;
-            if(_awsID == "awsID" && _awsSecret=="awsKey")
-            {
-                MessageBox.Show("Please fill credentials in ExcelToAmazonPolly.exe.config\nto connect with Amazon Polly services.", "One more thing", MessageBoxButtons.OK, MessageBoxIcon.Exclamation); //custom messageBox to show error  
-            }
-            else
-            {
-                InitializePolly(_awsID, _awsSecret, _region);
+            if (!RefreshConnection())
+                return;
 
-                if (_pc != null)
-                {
-                    GenerateVoiceFromDatatable((DataTable)dataGridView1.DataSource);
-                }
+            if (_pc != null)
+            {
+                GenerateVoiceFromDatatable((DataTable)dataGridView1.DataSource);
             }
+
         }
 
+        private void LexiconsB_Click(object sender, EventArgs e)
+        {
+            ShowLexiconsList();
+        }
 
         //Helper function to load data from excel, thanks to http://www.c-sharpcorner.com/members/harminder-singh8 
         public DataTable ReadExcel(string fileName, string fileExt)
@@ -154,14 +150,40 @@ namespace ExcelToAmazonPolly
             return dtexcel;
         }
 
+        bool RefreshConnection()
+        {
+            if (_pc != null)
+                return true;
+
+            //Refresh properties
+            Properties.Settings.Default.Reload();
+            _awsID = @Properties.Settings.Default.awsID;
+            _awsSecret = @Properties.Settings.Default.awsKey;
+            _region = @Properties.Settings.Default.awsRegion;
+            if (_awsID == "awsID" && _awsSecret == "awsKey")
+            {
+                MessageBox.Show("Please fill credentials in ExcelToAmazonPolly.exe.config\nto connect with Amazon Polly services.", "One more thing", MessageBoxButtons.OK, MessageBoxIcon.Exclamation); //custom messageBox to show error  
+                return false;
+            }
+            else
+            {
+                InitializePolly(_awsID, _awsSecret, _region);
+                return true;
+            }
+        }
 
         void InitializePolly(string awsID, string awsSecret, string region)
         {
             RegionEndpoint _region = RegionEndpoint.GetBySystemName(region);
             _pc = new AmazonPollyClient(awsID, awsSecret, _region);
+
+            if (_pc != null)
+            {
+                initialized = true;
+            }
         }
 
-        bool SynthesizeSpeech(string filename, string line, string voice)
+        bool SynthesizeSpeech(string filename, string line, string voice, List<string> lexiconNames)
         {
             try
             {
@@ -169,7 +191,11 @@ namespace ExcelToAmazonPolly
                 sreq.Text = line;
                 sreq.OutputFormat = _fileFormat;
                 sreq.VoiceId = voice;
-                if (checkBoxSSML.Checked)
+
+                if (lexiconNames != null)
+                    sreq.LexiconNames = lexiconNames;
+                
+            if (checkBoxSSML.Checked)
                 {
                     sreq.TextType = "SSML";
                 }
@@ -186,12 +212,11 @@ namespace ExcelToAmazonPolly
             }
             catch (Exception ex)
             {
-                MessageBox.Show(ex.Message);
+                MessageBox.Show("Error in: " + filename + "\n" +ex.Message, "Amazon Error");
                 return false;
             }
             return true;
         }
-
 
         void GenerateVoiceFromDatatable(DataTable dtable)
         {
@@ -204,7 +229,16 @@ namespace ExcelToAmazonPolly
                     lbl_Status.Text = "Processing row: " + (dtable.Rows.IndexOf(dataRow)+1) +"/" + dtable.Rows.Count;
                     if (dataRow["Generate"] != DBNull.Value && Convert.ToBoolean(dataRow["Generate"]))
                     {
-                        if (!SynthesizeSpeech(dataRow.Field<string>("File"), dataRow.Field<string>("Line"), dataRow.Field<string>("Voice")))
+                        string file = dataRow.Field<string>("File");
+                        string line = dataRow.Field<string>("Line");
+                        string voice = dataRow.Field<string>("Voice");
+                        string lexiconsString = dataRow.Field<string>("Lexicons");
+                        List<string> lexicons = null;
+                        if (lexiconsString != null)
+                            lexicons = lexiconsString.Split(',').ToList();
+
+
+                        if (!SynthesizeSpeech(file, line, voice, lexicons))
                         {
                             Cursor.Current = Cursors.Default;
                             lbl_Status.ForeColor = Color.Red;
@@ -223,6 +257,45 @@ namespace ExcelToAmazonPolly
                 lbl_Status.ForeColor = Color.Red;
                 lbl_Status.Text = "Output folder does not exist!";
             }
+        }
+
+        void ShowLexiconsList()
+        {
+            
+            if (!RefreshConnection())
+                return;
+
+            List<LexiconDescription> lexicons = new List<LexiconDescription>();
+
+            try { 
+                lexiconsList.Clear();
+                
+                ListLexiconsRequest req = new ListLexiconsRequest();
+                ListLexiconsResponse llr = _pc.ListLexicons(req);
+                lexicons = llr.Lexicons;
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show(ex.Message + "\n" + ex.StackTrace);
+                return;
+            }
+
+            foreach (LexiconDescription ld in lexicons)
+            {
+                string lexName = ld.Name;
+                lexiconsList.Add(lexName);
+            }
+
+            string joinedList ="Lexicons: \n\n" + string.Join("\n", lexiconsList);
+            joinedList += "\n\n\n Would you like to go to Amazon Console to manage lexicons?";
+            if (MessageBox.Show(joinedList, "Available Lexicons", MessageBoxButtons.YesNo, MessageBoxIcon.Asterisk) == DialogResult.Yes)
+            {
+            System.Diagnostics.Process.Start("http://" +_region +".console.aws.amazon.com/polly/home/Lexicons");
+            }
+
+
+
+
         }
 
 

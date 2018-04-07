@@ -23,6 +23,9 @@ First: Amazon Polly free quota is quite big and it's very fast to iterate all th
 Copy the **_voicelist_example.xls** file and fill it with all the voice lines you need. Mind there are some limits from the Amazon
 List of all available voices and languages: http://docs.aws.amazon.com/polly/latest/dg/voicelist.html
 For more advanced uses the SSML (Speech Synthesis Markup Language) reference : http://docs.aws.amazon.com/polly/latest/dg/ssml.html
+You can use the lexicons previously uploaded to your Amazon account, https://us-east-2.console.aws.amazon.com/polly/home/Lexicons (remember to use correct region).
+Separate needed lexicons with a comma, without space. Example: "LexiconOne,LexiconTwo"
+Used lexicons language must match used voice language, more details here: https://docs.aws.amazon.com/polly/latest/dg/managing-lexicons.html
 ##### Actually launching the app
  1. Load the xls file, after loading it should look something like this: ![Loaded file](https://i.imgur.com/oDdT39J.png)
  2. Select output folder

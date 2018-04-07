@@ -36,11 +36,12 @@
             this.lbl_folder = new System.Windows.Forms.Label();
             this.btn_generate = new System.Windows.Forms.Button();
             this.toolTip1 = new System.Windows.Forms.ToolTip(this.components);
-            this.lbl_Status = new System.Windows.Forms.Label();
             this.lbl_url = new System.Windows.Forms.LinkLabel();
             this.comboBoxFormat = new System.Windows.Forms.ComboBox();
             this.checkBoxSSML = new System.Windows.Forms.CheckBox();
+            this.lbl_Status = new System.Windows.Forms.Label();
             this.backgroundWorker1 = new System.ComponentModel.BackgroundWorker();
+            this.LexiconsB = new System.Windows.Forms.Button();
             ((System.ComponentModel.ISupportInitialize)(this.dataGridView1)).BeginInit();
             this.SuspendLayout();
             // 
@@ -86,7 +87,7 @@
             this.lbl_folder.Location = new System.Drawing.Point(174, 17);
             this.lbl_folder.MinimumSize = new System.Drawing.Size(0, 14);
             this.lbl_folder.Name = "lbl_folder";
-            this.lbl_folder.Size = new System.Drawing.Size(432, 14);
+            this.lbl_folder.Size = new System.Drawing.Size(404, 14);
             this.lbl_folder.TabIndex = 4;
             this.lbl_folder.Text = "Output folder: C:\\VoiceOutput";
             this.toolTip1.SetToolTip(this.lbl_folder, "Click to open folder.");
@@ -102,16 +103,6 @@
             this.btn_generate.Text = "Generate VO";
             this.btn_generate.UseVisualStyleBackColor = true;
             this.btn_generate.Click += new System.EventHandler(this.btn_generate_Click);
-            // 
-            // lbl_Status
-            // 
-            this.lbl_Status.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left) 
-            | System.Windows.Forms.AnchorStyles.Right)));
-            this.lbl_Status.Location = new System.Drawing.Point(12, 507);
-            this.lbl_Status.Name = "lbl_Status";
-            this.lbl_Status.Size = new System.Drawing.Size(746, 13);
-            this.lbl_Status.TabIndex = 6;
-            this.lbl_Status.Text = "Load XLS file to begin";
             // 
             // lbl_url
             // 
@@ -148,7 +139,7 @@
             // 
             this.checkBoxSSML.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
             this.checkBoxSSML.AutoSize = true;
-            this.checkBoxSSML.Location = new System.Drawing.Point(612, 14);
+            this.checkBoxSSML.Location = new System.Drawing.Point(612, 16);
             this.checkBoxSSML.Name = "checkBoxSSML";
             this.checkBoxSSML.Size = new System.Drawing.Size(55, 17);
             this.checkBoxSSML.TabIndex = 10;
@@ -156,11 +147,33 @@
             this.toolTip1.SetToolTip(this.checkBoxSSML, "Check if using SSML format for the input text");
             this.checkBoxSSML.UseVisualStyleBackColor = true;
             // 
+            // lbl_Status
+            // 
+            this.lbl_Status.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left) 
+            | System.Windows.Forms.AnchorStyles.Right)));
+            this.lbl_Status.Location = new System.Drawing.Point(12, 507);
+            this.lbl_Status.Name = "lbl_Status";
+            this.lbl_Status.Size = new System.Drawing.Size(746, 13);
+            this.lbl_Status.TabIndex = 6;
+            this.lbl_Status.Text = "Load XLS file to begin";
+            // 
+            // LexiconsB
+            // 
+            this.LexiconsB.Location = new System.Drawing.Point(584, 12);
+            this.LexiconsB.Name = "LexiconsB";
+            this.LexiconsB.Size = new System.Drawing.Size(22, 23);
+            this.LexiconsB.TabIndex = 11;
+            this.LexiconsB.Text = "L";
+            this.toolTip1.SetToolTip(this.LexiconsB, "Show available lexicons list");
+            this.LexiconsB.UseVisualStyleBackColor = true;
+            this.LexiconsB.Click += new System.EventHandler(this.LexiconsB_Click);
+            // 
             // Form1
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.ClientSize = new System.Drawing.Size(887, 529);
+            this.Controls.Add(this.LexiconsB);
             this.Controls.Add(this.checkBoxSSML);
             this.Controls.Add(this.comboBoxFormat);
             this.Controls.Add(this.lbl_url);
@@ -192,6 +205,7 @@
         private System.Windows.Forms.ComboBox comboBoxFormat;
         private System.Windows.Forms.CheckBox checkBoxSSML;
         private System.ComponentModel.BackgroundWorker backgroundWorker1;
+        private System.Windows.Forms.Button LexiconsB;
     }
 }
 
