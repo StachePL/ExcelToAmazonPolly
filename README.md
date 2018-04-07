@@ -38,7 +38,7 @@ Used lexicons language must match used voice language, more details here: https:
  - It may hang/crash when internet connection is lost (it's not bulletproof)
 
 ##### Plans
- - Add lexicons support
+ - Add lexicons support (DONE)
  - Make it more forgiving to the user
  - Clean the code
  - Make it cooler
